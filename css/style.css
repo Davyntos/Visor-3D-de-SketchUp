@@ -1,0 +1,29 @@
+/* Reset básico para asegurar comportamiento responsive */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+/* El contenedor del render de Three.js ocupa el espacio restante */
+#canvas-container {
+    width: 100%;
+    height: calc(100vh - 115px); /* Resta la altura aproximada de navbar + footer */
+    overflow: hidden;
+    background-color: #141414;
+}
+
+/* Estilos personalizados para el botón de VR nativo de Three.js */
+#VRButton {
+    background: rgba(13, 110, 253, 0.8) !important; /* Color azul Bootstrap */
+    color: white !important;
+    border: 1px solid #0d6efd !important;
+    border-radius: 6px !important;
+    font-weight: bold !important;
+    bottom: 80px !important; /* Lo sube un poco para no encimarse con el footer */
+    transition: background 0.3s ease;
+}
+
+#VRButton:hover {
+    background: #0b5ed7 !important;
+}
