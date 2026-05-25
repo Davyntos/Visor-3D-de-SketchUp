@@ -17,9 +17,23 @@
     </nav>
 
     <main class="flex-grow-1 position-relative" id="canvas-container">
-        <div id="loading" class="position-absolute top-50 start-50 translate-middle text-center">
+        <div id="loading" class="position-absolute top-50 start-50 translate-middle text-center" style="z-index: 10;">
             <div class="spinner-border text-primary" role="status"></div>
-            <p class="mt-2 text-muted">Cargando modelo aulay8.glb...</p>
+            <p class="mt-2 text-muted">Cargando modelo aula_y8.glb...</p>
+        </div>
+
+        <div class="position-absolute bottom-0 start-0 m-3 d-flex flex-column align-items-center" style="z-index: 5; gap: 5px;">
+            <button id="btn-forward" class="btn btn-primary opacity-75 fw-bold px-3 py-2">▲</button>
+            <div class="d-flex" style="gap: 5px;">
+                <button id="btn-left" class="btn btn-primary opacity-75 fw-bold px-3 py-2">◀</button>
+                <div style="width: 45px;"></div> <button id="btn-right" class="btn btn-primary opacity-75 fw-bold px-3 py-2">▶</button>
+            </div>
+            <button id="btn-backward" class="btn btn-primary opacity-75 fw-bold px-3 py-2">▼</button>
+        </div>
+
+        <div class="position-absolute bottom-0 end-0 m-3 d-flex" style="z-index: 5; gap: 10px;">
+            <button id="btn-rot-left" class="btn btn-secondary opacity-75 fw-bold px-3 py-2">🔄 Girar Izq</button>
+            <button id="btn-rot-right" class="btn btn-secondary opacity-75 fw-bold px-3 py-2">Girar Der 🔄</button>
         </div>
     </main>
 
