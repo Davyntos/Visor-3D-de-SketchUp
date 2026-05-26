@@ -191,5 +191,5 @@ function render() {
         controls.update();
     }
     
-    renderer.render(scene, camera)
+    renderer.render(scene, camera);
 }
