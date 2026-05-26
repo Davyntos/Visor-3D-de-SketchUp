@@ -132,14 +132,14 @@ function setupScreenControls() {
     bindButton('btn-rot-right', 'rotRight');
 }
 
-// 12. Lógica Unificada de Movimiento (Soporta Gamepad y Botones en Pantalla)
+// 12. Lógica Unificada de Movimiento (Soporta Gamepad GameSir y Botones en Pantalla)
 function handleNavigation() {
     let moveX = 0;
     let moveZ = 0;
     let rotateY = 0;
 
-    const moveSpeed = 0.04;
-    const rotationSpeed = 0.025;
+    const moveSpeed = 0.05;
+    const rotationSpeed = 0.03;
 
     // --- LEER ENTRADAS DE LOS BOTONES EN PANTALLA ---
     if (activeMovements.forward) moveZ = -1;
@@ -149,36 +149,47 @@ function handleNavigation() {
     if (activeMovements.rotLeft) rotateY = -1;
     if (activeMovements.rotRight) rotateY = 1;
 
-    // --- LEER ENTRADAS DEL CONTROL GAMESIR (Si está conectado) ---
+    // --- LEER ENTRADAS DEL CONTROL GAMESIR NOVA LITE ---
     const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
     for (let i = 0; i < gamepads.length; i++) {
         const gamepad = gamepads[i];
         if (gamepad && gamepad.axes.length >= 4) {
-            const deadzone = 0.15;
+            // Zona muerta de 0.18 para evitar derivas o drift fantasmas en los sticks de respuesta rápida
+            const deadzone = 0.18; 
+            
+            // Joystick Izquierdo: Movimiento lateral (Eje 0) y adelante/atrás (Eje 1)
             if (Math.abs(gamepad.axes[0]) > deadzone) moveX = gamepad.axes[0];
             if (Math.abs(gamepad.axes[1]) > deadzone) moveZ = gamepad.axes[1];
+            
+            // Joystick Derecho: Rotación sobre el eje Y de la escena (Eje 2)
             if (Math.abs(gamepad.axes[2]) > deadzone) rotateY = gamepad.axes[2];
         }
     }
 
     // --- APLICAR TRANSFORMACIONES AL ESCENARIO ---
-    // Rotación
+    // Rotación suave del grupo de la cámara
     if (rotateY !== 0) {
         cameraGroup.rotation.y -= rotateY * rotationSpeed;
     }
 
-    // Traslación sobre el plano horizontal (Eje X y Z)
+    // Traslación inteligente orientada hacia donde mira la cámara real
     if (moveX !== 0 || moveZ !== 0) {
-        const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
-        const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
-        
-        forward.y = 0;
-        right.y = 0;
-        forward.normalize();
-        right.normalize();
+        const directionForward = new THREE.Vector3(0, 0, -1);
+        const directionRight = new THREE.Vector3(1, 0, 0);
 
-        cameraGroup.position.addScaledVector(forward, -moveZ * moveSpeed);
-        cameraGroup.position.addScaledVector(right, moveX * moveSpeed);
+        // Extraemos la rotación interna del mundo que tiene la cámara y la inyectamos al vector
+        directionForward.applyQuaternion(camera.quaternion);
+        directionRight.applyQuaternion(camera.quaternion);
+
+        // Obligamos al movimiento a mantenerse plano en el suelo (evita volar al mirar hacia arriba)
+        directionForward.y = 0;
+        directionRight.y = 0;
+        directionForward.normalize();
+        directionRight.normalize();
+
+        // Aplicamos el desplazamiento continuo escalado por la velocidad
+        cameraGroup.position.addScaledVector(directionForward, -moveZ * moveSpeed);
+        cameraGroup.position.addScaledVector(directionRight, moveX * moveSpeed);
     }
 }
 
